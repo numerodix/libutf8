@@ -35,12 +35,13 @@ void assert_decode(const char *buffer, const uint32_t *expected)
 
     buflen = strlen(buffer);
 
-    chars = (uint32_t *) malloc((buflen - 1) / 4);
+    // drop one for the null byte, be conservative and assume
+    // every char is one byte
+    chars = (uint32_t *) malloc(sizeof(uint32_t) * (buflen - 1));
 
     charcnt = utf8_decode(buffer, chars);
 
-    //if (memcmp(chars, expected, charcnt) != 0) {
-    if (chars[0] != expected[0]) {
+    if (memcmp(chars, expected, charcnt * sizeof(uint32_t)) != 0) {
         printf("FAILED\n");
     } else {
         printf("PASSED\n");
