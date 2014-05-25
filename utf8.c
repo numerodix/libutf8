@@ -44,7 +44,7 @@ int utf8_decode(const char *buffer, uint32_t *chars)
 
     while (*buffer != '\0') {
 
-        // 4 *buffertes
+        // 4 bytes
         if ((*buffer & 0xf0) == 0xf0) {
             chars[cnt] = (*buffer & 0x7) << 18;
             buffer++;
@@ -54,7 +54,7 @@ int utf8_decode(const char *buffer, uint32_t *chars)
             buffer++;
             chars[cnt] |= *buffer & 0x3f;
 
-        // 3 *buffertes
+        // 3 bytes
         } else if ((*buffer & 0xe0) == 0xe0) {
             chars[cnt] = (*buffer & 0xf) << 12;
             buffer++;
@@ -62,13 +62,13 @@ int utf8_decode(const char *buffer, uint32_t *chars)
             buffer++;
             chars[cnt] |= *buffer & 0x3f;
 
-        // 2 *buffertes
+        // 2 bytes
         } else if ((*buffer & 0xc0) == 0xc0) {
             chars[cnt] = (*buffer & 0x1f) << 6;
             buffer++;
             chars[cnt] |= *buffer & 0x3f;
 
-        // 1 *bufferte
+        // 1 byte
         } else if (*buffer <= 0x7f) {
             chars[cnt] = *buffer;
 
