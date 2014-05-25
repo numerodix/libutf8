@@ -40,7 +40,78 @@ int utf8_encode(const uint32_t *chars, int charcnt, char *buffer)
 
 int utf8_decode(const char *buffer, uint32_t *chars)
 {
-    return 0;
+    /*
+     * while not eof:
+     * 1. figure out how many bytes the char has
+     * 2. run 1 of 4 branches to construct the char
+     */
+
+    int cnt = 0;
+    char by = *buffer;
+
+    while (by != '\0') {
+
+        if ((by & 0xf0) == 0xf0) {
+            chars[cnt] = (by & 0x7) << 18;
+
+            // next
+            buffer++;
+            by = *buffer;
+
+            chars[cnt] |= (by & 0x3f) << 12;
+
+            // next
+            buffer++;
+            by = *buffer;
+
+            chars[cnt] |= (by & 0x3f) << 6;
+
+            // next
+            buffer++;
+            by = *buffer;
+
+            chars[cnt] |= by & 0x3f;
+
+            cnt++;
+
+        } else if ((by & 0xe0) == 0xe0) {
+            chars[cnt] = (by & 0xf) << 12;
+
+            // next
+            buffer++;
+            by = *buffer;
+
+            chars[cnt] |= (by & 0x3f) << 6;
+
+            // next
+            buffer++;
+            by = *buffer;
+
+            chars[cnt] |= by & 0x3f;
+
+            cnt++;
+
+        } else if ((by & 0xc0) == 0xc0) {
+            chars[cnt] = (by & 0x1f) << 6;
+
+            // next
+            buffer++;
+            by = *buffer;
+
+            chars[cnt] |= by & 0x3f;
+
+            cnt++;
+
+        } else if (by <= 0x7f) {
+            chars[cnt++] = by;
+
+        }
+
+        buffer++;
+        by = *buffer;
+    }
+
+    return cnt;
 }
 
 
