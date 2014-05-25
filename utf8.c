@@ -41,50 +41,41 @@ int utf8_encode(const uint32_t *chars, int charcnt, char *buffer)
 int utf8_decode(const char *buffer, uint32_t *chars)
 {
     int cnt = 0;
-    char by = *buffer;
 
-    while (by != '\0') {
+    while (*buffer != '\0') {
 
-        // 4 bytes
-        if ((by & 0xf0) == 0xf0) {
-            chars[cnt] = (by & 0x7) << 18;
+        // 4 *buffertes
+        if ((*buffer & 0xf0) == 0xf0) {
+            chars[cnt] = (*buffer & 0x7) << 18;
             buffer++;
-            by = *buffer;
-            chars[cnt] |= (by & 0x3f) << 12;
+            chars[cnt] |= (*buffer & 0x3f) << 12;
             buffer++;
-            by = *buffer;
-            chars[cnt] |= (by & 0x3f) << 6;
+            chars[cnt] |= (*buffer & 0x3f) << 6;
             buffer++;
-            by = *buffer;
-            chars[cnt] |= by & 0x3f;
+            chars[cnt] |= *buffer & 0x3f;
 
-        // 3 bytes
-        } else if ((by & 0xe0) == 0xe0) {
-            chars[cnt] = (by & 0xf) << 12;
+        // 3 *buffertes
+        } else if ((*buffer & 0xe0) == 0xe0) {
+            chars[cnt] = (*buffer & 0xf) << 12;
             buffer++;
-            by = *buffer;
-            chars[cnt] |= (by & 0x3f) << 6;
+            chars[cnt] |= (*buffer & 0x3f) << 6;
             buffer++;
-            by = *buffer;
-            chars[cnt] |= by & 0x3f;
+            chars[cnt] |= *buffer & 0x3f;
 
-        // 2 bytes
-        } else if ((by & 0xc0) == 0xc0) {
-            chars[cnt] = (by & 0x1f) << 6;
+        // 2 *buffertes
+        } else if ((*buffer & 0xc0) == 0xc0) {
+            chars[cnt] = (*buffer & 0x1f) << 6;
             buffer++;
-            by = *buffer;
-            chars[cnt] |= by & 0x3f;
+            chars[cnt] |= *buffer & 0x3f;
 
-        // 1 byte
-        } else if (by <= 0x7f) {
-            chars[cnt] = by;
+        // 1 *bufferte
+        } else if (*buffer <= 0x7f) {
+            chars[cnt] = *buffer;
 
         }
 
         cnt++;  // advance to the next character
-
         buffer++;
-        by = *buffer;
     }
 
     return cnt;
