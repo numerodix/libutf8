@@ -6,6 +6,8 @@ import random
 
 libutf8 = ctypes.cdll.LoadLibrary('./libutf8.so')
 
+FAILED = []
+
 
 def encode(ustring):
     us = ctypes.create_unicode_buffer(ustring)
@@ -25,17 +27,21 @@ def verify(bstring):
 
 
 def assert_eq(fst, snd):
+    global FAILED
     try:
         assert fst == snd
         print("PASSED %s == %s" % (fst, snd))
     except AssertionError:
+        FAILED.append((fst, snd))
         print("FAILED %s != %s" % (fst, snd))
 
 def assert_bad(bstring):
+    global FAILED
     try:
         assert 0 != verify(bstring)
         print("PASSED %s judged not valid" % bstring)
     except AssertionError:
+        FAILED.append((fst, snd))
         print("FAILED %s judged valid" % bstring)
 
 def assert_roundtrip_us(ustring):
@@ -47,7 +53,7 @@ def assert_roundtrip_us(ustring):
 
 def get_random_unicode():
     us = u''
-    cnt = random.randint(0, 10)
+    cnt = random.randint(1, 10)
     for i in range(cnt):
         ch = random.randint(1, 0xffff)
         us += unichr(ch)
@@ -83,10 +89,15 @@ def main():
         assert_random()
 
     # try all the chars
-    for i in xrange(0xfffff):
+    for i in xrange(1, 0xfffff):
         uch = unichr(i)
         ustring = uch + uch + uch
         assert_roundtrip_us(ustring)
+
+    print('')
+    print("Failures: %s" % len(FAILED))
+    for (fst, snd) in FAILED:
+        print("%s != %s" % (fst, snd))
 
 
 if __name__ == '__main__':
