@@ -14,4 +14,4 @@ utf8.o: utf8.c utf8.h
 	gcc $(CFLAGS) -c -o $@ utf8.c
 
 clean:
-	rm -f *.o *.so test
+	rm -f *.o *.so test core

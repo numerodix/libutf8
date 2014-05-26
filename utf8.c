@@ -84,7 +84,7 @@ int utf8_decode(const char *buffer, uint32_t *chars)
 
 int utf8_verify(const char *buffer)
 {
-    char prev, cur;
+    unsigned char prev, cur;
 
     prev = *buffer;
     buffer++;

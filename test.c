@@ -1,5 +1,5 @@
-#include "stdlib.h"
 #include "stdio.h"
+#include "stdlib.h"
 #include "string.h"
 
 #include "utf8.h"
@@ -79,9 +79,23 @@ void assert_decode(const char *buffer, const uint32_t *expected)
     free(chars);
 }
 
+void assert_invalid(const char *buffer)
+{
+    if (utf8_verify(buffer) == 0) {
+        printf("FAILED %s judged valid\n", buffer);
+    } else {
+        printf("PASSED %s judged not valid\n", buffer);
+    }
+}
+
 
 int main(int argc, char **argv)
 {
+    assert_invalid("\xff\xfe");
+    assert_invalid("\xd8\x01");
+    assert_invalid("\xdf\xff");
+
+
     // A
     assert_encode((uint32_t[]) {0x41}, 1, "\x41");
     // ÿ
