@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 import ctypes
+import random
 
 
 libutf8 = ctypes.cdll.LoadLibrary('./libutf8.so')
@@ -37,6 +38,26 @@ def assert_bad(bstring):
     except AssertionError:
         print("FAILED %s judged valid" % bstring)
 
+def assert_roundtrip_us(ustring):
+    py_ustring = ustring.encode('utf8').decode('utf8')
+    print('')
+    assert_eq(ustring, decode(encode(ustring)))
+    assert_eq(ustring, py_ustring)
+
+
+def get_random_unicode():
+    us = u''
+    cnt = random.randint(0, 10)
+    for i in range(cnt):
+        ch = random.randint(1, 0xffff)
+        us += unichr(ch)
+
+    return us
+
+def assert_random():
+    us = get_random_unicode()
+    assert_roundtrip_us(us)
+
 
 def main():
     assert_bad('\xff\xfe')
@@ -56,6 +77,16 @@ def main():
     assert_eq(u'𐅄', decode('𐅄'))
     assert_eq(u'AA', decode('AA'))
     assert_eq(u'ɰɵƥ', decode('ɰɵƥ'))
+
+    # try some random chars
+    for i in xrange(100):
+        assert_random()
+
+    # try all the chars
+    for i in xrange(0xfffff):
+        uch = unichr(i)
+        ustring = uch + uch + uch
+        assert_roundtrip_us(ustring)
 
 
 if __name__ == '__main__':
